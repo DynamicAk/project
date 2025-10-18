@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Add Event - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+.admin-container {
+    padding: 6rem 0 4rem;
+    min-height: 100vh;
+    background: var(--soft-gray);
+}
+
+.page-header {
+    background: var(--white);
+    box-shadow: var(--box-shadow);
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 3rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section h3 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-help {
+    font-size: 0.9rem;
+    color: var(--light-gray);
+    margin-top: 0.3rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--soft-gray);
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.preview-card {
+    background: var(--soft-gray);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.preview-title {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+.preview-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border-left: 4px solid var(--primary-green);
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-container {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="color: var(--primary-blue); font-size: 2rem; margin: 0;">
+                    <i class="fas fa-plus-circle"></i>
+                    Add New Event
+                </h1>
+                <a href="{{ url_for('admin_events') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Events
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <form method="POST" id="eventForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-info-circle"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="title" class="form-label">Event Title *</label>
+                        <input type="text" id="title" name="title" class="form-input" required>
+                        <div class="form-help">Enter a clear and descriptive title for the yoga event</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" class="form-textarea" placeholder="Describe the event, what participants should expect, and any requirements..."></textarea>
+                        <div class="form-help">Provide details about the event goals, what to bring, and who should join</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category *</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="class">Regular Class</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="retreat">Retreat</option>
+                            <option value="special">Special Event</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-calendar-alt"></i>
+                        Schedule
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="date" class="form-label">Date *</label>
+                            <input type="date" id="date" name="date" class="form-input" required min="{{ today }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="time" class="form-label">Time *</label>
+                            <input type="time" id="time" name="time" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Instructor -->
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-map-marker-alt"></i>
+                        Location & Instructor
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="location" class="form-label">Location *</label>
+                            <select id="location" name="location" class="form-select" required>
+                                <option value="">Select Location</option>
+                                <option value="Campus Yoga Hall">Campus Yoga Hall</option>
+                                <option value="Meditation Room">Meditation Room</option>
+                                <option value="Sports Complex">Sports Complex</option>
+                                <option value="Outdoor Garden">Outdoor Garden</option>
+                                <option value="Conference Hall">Conference Hall</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="instructor" class="form-label">Instructor *</label>
+                            <input type="text" id="instructor" name="instructor" class="form-input" required placeholder="e.g., Dr. Priya Sharma">
+                            <div class="form-help">Name of the yoga instructor or session leader</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity -->
+                <div class="form-section">
+                    <h3>
+                        <i class="fas fa-users"></i>
+                        Capacity
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="max_participants" class="form-label">Maximum Participants *</label>
+                        <input type="number" id="max_participants" name="max_participants" class="form-input" required min="1" max="100" value="30">
+                        <div class="form-help">Maximum number of people who can register for this event</div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="preview-card" id="eventPreview" style="display: none;">
+                    <h3 class="preview-title">
+                        <i class="fas fa-eye"></i>
+                        Event Preview
+                    </h3>
+                    <div class="preview-content">
+                        <div class="event-date" style="background: var(--gradient); color: white; border-radius: var(--border-radius); padding: 1rem; text-align: center; margin-bottom: 1.5rem; display: inline-block;">
+                            <div class="day" style="font-size: 2rem; font-weight: 700;" id="previewDay">-</div>
+                            <div class="month" style="text-transform: uppercase;" id="previewMonth">-</div>
+                        </div>
+                        <div class="event-info">
+                            <h3 id="previewTitle" style="color: var(--primary-blue); margin-bottom: 1rem;">Event Title</h3>
+                            <p id="previewTime" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;"><i class="fas fa-clock"></i> <span>-</span></p>
+                            <p id="previewLocation" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> <span>-</span></p>
+                            <p id="previewInstructor" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;"><i class="fas fa-user"></i> <span>-</span></p>
+                            <p id="previewCapacity" style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-users"></i> <span>- spots available</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline btn-large" onclick="togglePreview()">
+                        <i class="fas fa-eye"></i> Preview Event
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-plus"></i> Create Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Set minimum date to today
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+// Preview functionality
+function togglePreview() {
+    const preview = document.getElementById('eventPreview');
+    const isVisible = preview.style.display !== 'none';
+    
+    if (isVisible) {
+        preview.style.display = 'none';
+    } else {
+        updatePreview();
+        preview.style.display = 'block';
+        preview.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function updatePreview() {
+    const title = document.getElementById('title').value || 'Event Title';
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const location = document.getElementById('location').value;
+    const instructor = document.getElementById('instructor').value;
+    const maxParticipants = document.getElementById('max_participants').value;
+    
+    document.getElementById('previewTitle').textContent = title;
+    
+    if (date) {
+        const dateObj = new Date(date + 'T00:00:00');
+        document.getElementById('previewDay').textContent = dateObj.getDate();
+        document.getElementById('previewMonth').textContent = dateObj.toLocaleString('default', { month: 'short' });
+    }
+    
+    document.getElementById('previewTime').querySelector('span').textContent = time || '-';
+    document.getElementById('previewLocation').querySelector('span').textContent = location || '-';
+    document.getElementById('previewInstructor').querySelector('span').textContent = instructor || '-';
+    document.getElementById('previewCapacity').querySelector('span').textContent = maxParticipants ? `${maxParticipants} spots available` : '- spots available';
+}
+
+// Auto-update preview when inputs change
+document.getElementById('eventForm').addEventListener('input', function() {
+    if (document.getElementById('eventPreview').style.display !== 'none') {
+        updatePreview();
+    }
+});
+
+// Form validation
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+    const date = new Date(document.getElementById('date').value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (date < today) {
+        e.preventDefault();
+        alert('Event date cannot be in the past.');
+        return;
+    }
+    
+    const maxParticipants = parseInt(document.getElementById('max_participants').value);
+    if (maxParticipants < 1 || maxParticipants > 100) {
+        e.preventDefault();
+        alert('Maximum participants must be between 1 and 100.');
+        return;
+    }
+});
+
+// Auto-fill instructor suggestions based on common instructors
+const instructorInput = document.getElementById('instructor');
+const commonInstructors = [
+    'Dr. Priya Sharma',
+    'Prof. Raj Kumar',
+    'Instructor Amit',
+    'Ms. Meera Patel',
+    'Dr. Suresh Gupta'
+];
+
+instructorInput.addEventListener('input', function() {
+    // You could implement autocomplete here
+});
+</script>
+{% endblock %}

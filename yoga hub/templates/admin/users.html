@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+.admin-container {
+    padding: 6rem 0 4rem;
+    min-height: 100vh;
+    background: var(--soft-gray);
+}
+
+.page-header {
+    background: var(--white);
+    box-shadow: var(--box-shadow);
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.users-table-container {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+.table-header {
+    background: var(--gradient);
+    color: var(--white);
+    padding: 1rem 2rem;
+    font-weight: 600;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.users-table th {
+    background: var(--soft-gray);
+    font-weight: 600;
+    color: var(--dark-gray);
+}
+
+.users-table tr:hover {
+    background: var(--soft-gray);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.user-details h4 {
+    margin: 0;
+    color: var(--primary-blue);
+}
+
+.user-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--light-gray);
+}
+
+.role-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.role-student {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-professor {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.role-admin {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.role-select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.stats-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    flex: 1;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--light-gray);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .users-table-container {
+        overflow-x: auto;
+    }
+    
+    .users-table {
+        min-width: 800px;
+    }
+    
+    .stats-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="color: var(--primary-blue); font-size: 2rem; margin: 0;">
+                    <i class="fas fa-users"></i>
+                    Manage Users
+                </h1>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- User Statistics -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">{{ users|selectattr('role', 'equalto', 'student')|list|length }}</div>
+                <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ users|selectattr('role', 'equalto', 'professor')|list|length }}</div>
+                <div class="stat-label">Professors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ users|selectattr('role', 'equalto', 'admin')|list|length }}</div>
+                <div class="stat-label">Admins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ users|length }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table-container">
+            <div class="table-header">
+                <i class="fas fa-list"></i>
+                All Users ({{ users|length }})
+            </div>
+            
+            {% if users %}
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                        <th>Registrations</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture }}" alt="Profile" class="user-avatar">
+                                {% else %}
+                                <div class="user-avatar-placeholder">
+                                    {{ user.name[0].upper() }}
+                                </div>
+                                {% endif %}
+                                <div class="user-details">
+                                    <h4>{{ user.name }}</h4>
+                                    <p>{{ user.role.title() }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <select class="role-select" onchange="changeUserRole({{ user.id }}, this.value)" 
+                                    {% if user.id == current_user.id %}disabled{% endif %}>
+                                <option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option>
+                                <option value="professor" {% if user.role == 'professor' %}selected{% endif %}>Professor</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </td>
+                        <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <span class="badge">{{ user.registrations|length }}</span>
+                        </td>
+                        <td>
+                            {% if user.id != current_user.id %}
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-icon btn-view" title="View Details" onclick="viewUser({{ user.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {% else %}
+                            <span style="color: var(--light-gray); font-size: 0.9rem;">Current User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--light-gray);">
+                <i class="fas fa-users" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <h3>No Users Found</h3>
+                <p>Users will appear here once they sign up.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px; margin: 5% auto; background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 id="modalTitle" style="color: var(--primary-blue);"></h2>
+            <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<div id="modalOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;" onclick="closeModal()"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function changeUserRole(userId, newRole) {
+    if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+        // Reset the select to original value
+        location.reload();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}/role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role: newRole })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showAlert('success', data.message);
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('error', data.error);
+            location.reload();
+        }
+    } catch (error) {
+        showAlert('error', 'Failed to update user role');
+        location.reload();
+    }
+}
+
+function viewUser(userId) {
+    // Fetch user details and show in modal
+    const userRow = document.querySelector(`tr:has(select[onchange*="${userId}"])`);
+    const userName = userRow.querySelector('.user-details h4').textContent;
+    const userEmail = userRow.querySelector('td:nth-child(2)').textContent;
+    const userRole = userRow.querySelector('.user-details p').textContent;
+    const joinDate = userRow.querySelector('td:nth-child(4)').textContent;
+    const registrations = userRow.querySelector('.badge').textContent;
+    
+    document.getElementById('modalTitle').textContent = userName;
+    document.getElementById('modalContent').innerHTML = `
+        <div style="display: grid; gap: 1rem;">
+            <div><strong>Email:</strong> ${userEmail}</div>
+            <div><strong>Role:</strong> ${userRole}</div>
+            <div><strong>Joined:</strong> ${joinDate}</div>
+            <div><strong>Event Registrations:</strong> ${registrations}</div>
+            <div><strong>Notifications:</strong> Enabled</div>
+        </div>
+    `;
+    
+    document.getElementById('userModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('userModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.innerHTML = `
+        <span>${message}</span>
+        <button type="button" class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    let flashContainer = document.querySelector('.flash-messages');
+    if (!flashContainer) {
+        flashContainer = document.createElement('div');
+        flashContainer.className = 'flash-messages';
+        document.body.insertBefore(flashContainer, document.querySelector('main'));
+    }
+    
+    flashContainer.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
+        }
+    }, 4000);
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

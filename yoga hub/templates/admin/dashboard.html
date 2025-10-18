@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Sangam Yoga Club{% endblock %}
+
+{% block extra_css %}
+<style>
+.admin-container {
+    padding: 6rem 0 4rem;
+    min-height: 100vh;
+    background: var(--soft-gray);
+}
+
+.admin-header {
+    background: var(--white);
+    box-shadow: var(--box-shadow);
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.admin-title {
+    color: var(--primary-blue);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+    text-align: center;
+    color: var(--light-gray);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--light-gray);
+    font-weight: 600;
+}
+
+.admin-sections {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.admin-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--soft-gray);
+}
+
+.section-title {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.action-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark-gray);
+    transition: var(--transition);
+}
+
+.action-card:hover {
+    transform: translateY(-3px);
+    color: var(--primary-blue);
+}
+
+.action-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-blue);
+}
+
+.recent-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    transition: var(--transition);
+}
+
+.recent-item:hover {
+    background: var(--soft-gray);
+}
+
+.recent-item:last-child {
+    border-bottom: none;
+}
+
+.recent-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: bold;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.recent-info {
+    flex: 1;
+}
+
+.recent-name {
+    font-weight: 600;
+    color: var(--dark-gray);
+}
+
+.recent-event {
+    font-size: 0.9rem;
+    color: var(--light-gray);
+}
+
+.recent-time {
+    font-size: 0.8rem;
+    color: var(--light-gray);
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .admin-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="container">
+            <h1 class="admin-title">Admin Dashboard</h1>
+            <p class="admin-subtitle">Manage Sangam Yoga Club</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_events }}</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-number">{{ stats.upcoming_events }}</div>
+                <div class="stat-label">Upcoming Events</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_registrations }}</div>
+                <div class="stat-label">Total Registrations</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="{{ url_for('admin_add_event') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3>Add Event</h3>
+                <p>Create a new yoga session</p>
+            </a>
+            
+            <a href="{{ url_for('admin_events') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3>Manage Events</h3>
+                <p>View and edit events</p>
+            </a>
+            
+            <a href="{{ url_for('admin_users') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h3>Manage Users</h3>
+                <p>View user accounts</p>
+            </a>
+            
+            <a href="{{ url_for('admin_registrations') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <h3>Registrations</h3>
+                <p>View event registrations</p>
+            </a>
+        </div>
+
+        <!-- Admin Sections -->
+        <div class="admin-sections">
+            <!-- Recent Activity -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Registrations
+                    </h2>
+                    <a href="{{ url_for('admin_registrations') }}" class="btn btn-outline btn-small">View All</a>
+                </div>
+                
+                <div class="recent-list">
+                    {% if recent_registrations %}
+                        {% for registration in recent_registrations %}
+                        <div class="recent-item">
+                            <div class="recent-avatar">
+                                {{ registration.user.name[0].upper() }}
+                            </div>
+                            <div class="recent-info">
+                                <div class="recent-name">{{ registration.user.name }}</div>
+                                <div class="recent-event">{{ registration.event.title }}</div>
+                            </div>
+                            <div class="recent-time">
+                                {{ registration.created_at.strftime('%m/%d %H:%M') }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No recent registrations</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Quick Stats
+                    </h2>
+                </div>
+                
+                <div class="stats-list">
+                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                        <span>Admin Users</span>
+                        <span class="badge" style="background: var(--primary-blue); color: white; padding: 0.3rem 0.8rem; border-radius: 20px;">2</span>
+                    </div>
+                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                        <span>Students</span>
+                        <span class="badge" style="background: var(--primary-green); color: white; padding: 0.3rem 0.8rem; border-radius: 20px;">{{ stats.total_users - 5 }}</span>
+                    </div>
+                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                        <span>Professors</span>
+                        <span class="badge" style="background: var(--light-gray); color: white; padding: 0.3rem 0.8rem; border-radius: 20px;">3</span>
+                    </div>
+                    <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+                        <span>This Month</span>
+                        <span class="badge" style="background: #f39c12; color: white; padding: 0.3rem 0.8rem; border-radius: 20px;">{{ stats.upcoming_events }}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="#" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-download"></i> Export Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add any admin-specific JavaScript here
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh statistics every 5 minutes
+    setInterval(function() {
+        // You can add AJAX calls to refresh stats here
+        console.log('Refreshing admin stats...');
+    }, 300000); // 5 minutes
+});
+</script>
+{% endblock %}

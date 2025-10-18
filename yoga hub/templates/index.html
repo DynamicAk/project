@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="home" class="hero">
+  <div class="hero-banner">
+    <img src="{{ url_for('static', filename='src/banner.png') }}" alt="Sangam Yoga Club Banner" class="banner-img">
+  </div>
+  <div class="hero-gradient"></div>
+  <div class="container hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title">Sangam Yoga Club</h1>
+      <p class="hero-subtitle">Calm Mind. Strong Body. Better Campus.</p>
+      <div class="hero-buttons">
+        <a href="#events" class="btn btn-primary">View Events</a>
+        <a href="#about" class="btn btn-secondary">About Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Club Section -->
+<section id="about" class="about-section">
+  <div class="container">
+    <div class="about-content">
+      <div class="about-text">
+        <h2>About Sangam Yoga Club</h2>
+        <p>Welcome to Sangam Yoga Club, NIT Delhi's premier wellness community dedicated to promoting physical and mental well-being among students and faculty.</p>
+        <p>Our club brings together the ancient wisdom of yoga with modern academic life, creating a supportive environment where everyone can find their inner balance and peace.</p>
+        <p>Whether you're a beginner or an experienced practitioner, our inclusive community welcomes all levels of experience. Join us in building a healthier, more mindful campus culture.</p>
+      </div>
+      <div class="about-image">
+        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Yoga practice" class="about-img">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming Events Snapshot -->
+<section id="events" class="events-section">
+  <div class="container">
+    <h2 class="section-title">Upcoming Events</h2>
+    <div class="events-grid" id="upcoming-events">
+      {% if upcoming_events %}
+        {% for event in upcoming_events %}
+        <div class="event-card">
+          <div class="event-date">
+            <span class="day">{{ event.date.strftime('%d') }}</span>
+            <span class="month">{{ event.date.strftime('%b') }}</span>
+          </div>
+          <div class="event-info">
+            <h3>{{ event.title }}</h3>
+            <p class="event-time"><i class="fas fa-clock"></i> {{ event.time.strftime('%I:%M %p') }}</p>
+            <p class="event-location"><i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
+            <p class="event-instructor"><i class="fas fa-user"></i> {{ event.instructor }}</p>
+          </div>
+          {% if current_user.is_authenticated %}
+            <button class="btn btn-register" onclick="registerForEvent({{ event.id }})">Register</button>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-register">Login to Register</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="event-card">
+          <div class="event-date">
+            <span class="day">15</span>
+            <span class="month">Nov</span>
+          </div>
+          <div class="event-info">
+            <h3>Morning Flow Session</h3>
+            <p class="event-time"><i class="fas fa-clock"></i> 7:00 AM - 8:30 AM</p>
+            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Campus Yoga Hall</p>
+            <p class="event-instructor"><i class="fas fa-user"></i> Dr. Priya Sharma</p>
+          </div>
+          <a href="{{ url_for('login') }}" class="btn btn-register">Login to Register</a>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-date">
+            <span class="day">20</span>
+            <span class="month">Nov</span>
+          </div>
+          <div class="event-info">
+            <h3>Stress Relief Workshop</h3>
+            <p class="event-time"><i class="fas fa-clock"></i> 5:00 PM - 6:30 PM</p>
+            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Meditation Room</p>
+            <p class="event-instructor"><i class="fas fa-user"></i> Prof. Raj Kumar</p>
+          </div>
+          <a href="{{ url_for('login') }}" class="btn btn-register">Login to Register</a>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-date">
+            <span class="day">25</span>
+            <span class="month">Nov</span>
+          </div>
+          <div class="event-info">
+            <h3>Power Yoga Challenge</h3>
+            <p class="event-time"><i class="fas fa-clock"></i> 6:00 PM - 7:30 PM</p>
+            <p class="event-location"><i class="fas fa-map-marker-alt"></i> Sports Complex</p>
+            <p class="event-instructor"><i class="fas fa-user"></i> Instructor Amit</p>
+          </div>
+          <a href="{{ url_for('login') }}" class="btn btn-register">Login to Register</a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="events-cta">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline">View My Events</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-outline">Login to View All Events</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits-section">
+  <div class="container">
+    <h2 class="section-title">Why Practice Yoga?</h2>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <h3>Stress Relief</h3>
+        <p>Reduce academic stress and anxiety through mindful breathing and meditation techniques.</p>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-running"></i>
+        </div>
+        <h3>Flexibility</h3>
+        <p>Improve physical flexibility and posture, essential for long hours of studying.</p>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Community</h3>
+        <p>Connect with like-minded students and faculty in a supportive wellness environment.</p>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-balance-scale"></i>
+        </div>
+        <h3>Balance</h3>
+        <p>Find the perfect balance between academic demands and personal well-being.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <h2 class="section-title">What Our Community Says</h2>
+    <div class="testimonials-carousel">
+      <div class="testimonial-slide active">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Joining Sangam Yoga Club has been life-changing. The stress relief sessions helped me manage my final year pressure so much better."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b667111b?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Student" class="author-img">
+            <div class="author-info">
+              <h4>Priya Verma</h4>
+              <span>B.Tech CSE, Final Year</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="testimonial-slide">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"As a faculty member, I appreciate how this club promotes work-life balance. The evening sessions are perfect after long teaching hours."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Professor" class="author-img">
+            <div class="author-info">
+              <h4>Dr. Rajesh Kumar</h4>
+              <span>Professor, Mechanical Engineering</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="testimonial-slide">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The community here is so welcoming! I came as a complete beginner and now I'm teaching basic poses to my hostel mates."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Student" class="author-img">
+            <div class="author-info">
+              <h4>Arjun Singh</h4>
+              <span>M.Tech ECE, 1st Year</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="carousel-dots">
+      <span class="dot active" data-slide="0"></span>
+      <span class="dot" data-slide="1"></span>
+      <span class="dot" data-slide="2"></span>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <h2 class="section-title">Get In Touch</h2>
+    <div class="contact-content">
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <div>
+            <h4>Email</h4>
+            <p>sangamyoga@nitdelhi.ac.in</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <div>
+            <h4>Phone</h4>
+            <p>+91 11 3384 2000</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <h4>Location</h4>
+            <p>Yoga Hall, NIT Delhi<br>A-7, Institutional Area, Sector-4<br>Dwarka, New Delhi - 110078</p>
+          </div>
+        </div>
+      </div>
+      
+      <form class="contact-form" action="/api/contact" method="POST">
+        <div class="form-group">
+          <input type="text" name="name" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Your Email" required>
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

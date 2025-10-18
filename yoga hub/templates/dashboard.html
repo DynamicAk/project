@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sangam Yoga Club{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-container {
+    padding: 6rem 0 4rem;
+    min-height: 80vh;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.welcome-message {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.dashboard-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.event-item {
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    transition: var(--transition);
+}
+
+.event-item:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.event-title {
+    font-weight: 600;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.event-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--light-gray);
+    margin-bottom: 1rem;
+}
+
+.event-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.event-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--light-gray);
+    padding: 2rem;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+    }
+    
+    .event-details {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .event-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1 class="welcome-message">Hello, {{ current_user.name.split()[0] }} 👋</h1>
+            <p>Ready for your next yoga session?</p>
+            
+            <div class="user-info">
+                {% if current_user.profile_picture %}
+                <img src="{{ current_user.profile_picture }}" alt="Profile" class="user-avatar">
+                {% else %}
+                <div class="user-avatar" style="background: var(--gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                    {{ current_user.name[0].upper() }}
+                </div>
+                {% endif %}
+                <div>
+                    <div style="font-weight: 600;">{{ current_user.name }}</div>
+                    <div style="color: var(--light-gray); font-size: 0.9rem;">{{ current_user.email }}</div>
+                    <div style="color: var(--primary-green); font-size: 0.8rem; text-transform: capitalize;">{{ current_user.role }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Registered Events -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i>
+                        My Registered Events
+                    </h2>
+                    <span class="badge">{{ registered_events|length }}</span>
+                </div>
+                
+                <div class="event-list">
+                    {% if registered_events %}
+                        {% for event in registered_events %}
+                        <div class="event-item">
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ event.date.strftime('%B %d, %Y') }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    {{ event.time.strftime('%I:%M %p') }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ event.location }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-user"></i>
+                                    {{ event.instructor }}
+                                </div>
+                            </div>
+                            <div class="event-actions">
+                                <button class="btn btn-outline btn-small" onclick="unregisterFromEvent({{ event.id }})">
+                                    <i class="fas fa-times"></i> Unregister
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-plus"></i>
+                            <p>No registered events yet.</p>
+                            <p>Explore upcoming events below!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recommended Events -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>
+                        Recommended Events
+                    </h2>
+                    <a href="#events" class="btn btn-outline btn-small">View All</a>
+                </div>
+                
+                <div class="event-list">
+                    {% if upcoming_events %}
+                        {% for event in upcoming_events %}
+                        <div class="event-item">
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ event.date.strftime('%B %d, %Y') }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-clock"></i>
+                                    {{ event.time.strftime('%I:%M %p') }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ event.location }}
+                                </div>
+                                <div class="event-detail">
+                                    <i class="fas fa-users"></i>
+                                    {{ event.available_spots() }} spots left
+                                </div>
+                            </div>
+                            <div class="event-actions">
+                                <button class="btn btn-primary btn-small" onclick="registerForEvent({{ event.id }})">
+                                    <i class="fas fa-plus"></i> Register
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar"></i>
+                            <p>No upcoming events available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="dashboard-section">
+            <h2 class="section-title">
+                <i class="fas fa-bolt"></i>
+                Quick Actions
+            </h2>
+            <div class="quick-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="#events" class="btn btn-primary">
+                    <i class="fas fa-calendar-plus"></i> Browse Events
+                </a>
+                <a href="#gallery" class="btn btn-outline">
+                    <i class="fas fa-images"></i> View Gallery
+                </a>
+                <a href="#contact" class="btn btn-outline">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <button class="btn btn-outline" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i> 
+                    {{ 'Disable' if current_user.notifications_enabled else 'Enable' }} Notifications
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function registerForEvent(eventId) {
+    try {
+        const response = await fetch(`/api/register/${eventId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showAlert('success', data.message);
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('error', data.error);
+        }
+    } catch (error) {
+        showAlert('error', 'Registration failed. Please try again.');
+    }
+}
+
+async function unregisterFromEvent(eventId) {
+    if (!confirm('Are you sure you want to unregister from this event?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/unregister/${eventId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showAlert('success', data.message);
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('error', data.error);
+        }
+    } catch (error) {
+        showAlert('error', 'Unregistration failed. Please try again.');
+    }
+}
+
+async function toggleNotifications() {
+    // Implementation for toggling notifications
+    showAlert('info', 'Notification preferences updated!');
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.innerHTML = `
+        <span>${message}</span>
+        <button type="button" class="close-alert" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    const flashContainer = document.querySelector('.flash-messages') || document.createElement('div');
+    flashContainer.className = 'flash-messages';
+    flashContainer.appendChild(alertDiv);
+    
+    if (!document.querySelector('.flash-messages')) {
+        document.body.insertBefore(flashContainer, document.querySelector('main'));
+    }
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
+        }
+    }, 4000);
+}
+</script>
+{% endblock %}
